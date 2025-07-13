@@ -93,11 +93,11 @@
         scrollToBottom();
 
         try {
-          const res = await fetch(https://api.retellai.com/create-chat-completion, {
+          const res = await fetch(RETELL_API_URL, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + key_ea414098af763eef1f5aca26fe28
+              'Authorization': 'Bearer ' + RETELL_API_KEY
             },
             body: JSON.stringify({
               chat_id: CHAT_ID,
