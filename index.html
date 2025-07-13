@@ -68,66 +68,71 @@
   </div>
 
   <script>
-    // Replace with your Retell API key and chat ID
+    // ─────────── CONFIGURATION ───────────
     const RETELL_API_URL = 'https://api.retellai.com/create-chat-completion';
     const RETELL_API_KEY = 'key_ea414098af763eef1f5aca26fe28';
-    const CHAT_ID         = 'agent_2b2e80fcac6c0179e9706d7048';
+    const CHAT_ID        = 'agent_2b2e80fcac6c0179e9706d7048';
+    // ─────────────────────────────────────
 
-    const messagesEl = document.getElementById('messages');
-    const inputEl    = document.getElementById('user-input');
-    const sendBtn    = document.getElementById('send-btn');
+    document.addEventListener('DOMContentLoaded', () => {
+      const messagesEl = document.getElementById('messages');
+      const inputEl    = document.getElementById('user-input');
+      const sendBtn    = document.getElementById('send-btn');
 
-    sendBtn.addEventListener('click', onSend);
-    inputEl.addEventListener('keyup', e => {
-      if (e.key === 'Enter') onSend();
-    });
+      sendBtn.addEventListener('click', onSend);
+      inputEl.addEventListener('keyup', e => {
+        if (e.key === 'Enter') onSend();
+      });
 
-    async function onSend() {
-      const text = inputEl.value.trim();
-      if (!text) return;
+      async function onSend() {
+        const text = inputEl.value.trim();
+        if (!text) return;
 
-      appendMessage('user', text);
-      inputEl.value = '';
-      scrollToBottom();
+        appendMessage('user', text);
+        inputEl.value = '';
+        scrollToBottom();
 
-      try {
-        const res = await fetch(https://api.retellai.com/create-chat-completion, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + key_ea414098af763eef1f5aca26fe28
-          },
-          body: JSON.stringify({
-            chat_id: agent_2b2e80fcac6c0179e9706d7048,
-            content: text
-          })
-        });
+        try {
+          const res = await fetch(https://api.retellai.com/create-chat-completion, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + key_ea414098af763eef1f5aca26fe28
+            },
+            body: JSON.stringify({
+              chat_id: CHAT_ID,
+              content: text
+            })
+          });
 
-        const data = await res.json();
-        const messages = data.messages || [];
-        if (messages.length) {
-          // display each reply from agent
-          messages.forEach(msg => appendMessage('bot', msg.content));
-        } else {
-          appendMessage('bot', 'No response from agent.');
+          const data = await res.json();
+          const msgs = data.messages || [];
+          if (msgs.length) {
+            msgs.forEach(m => appendMessage('bot', m.content));
+          } else if (data.reply) {
+            appendMessage('bot', data.reply);
+          } else {
+            appendMessage('bot', 'No response from agent.');
+          }
+        } catch (err) {
+          console.error(err);
+          appendMessage('bot', 'Error connecting to Retell AI.');
         }
-      } catch (err) {
-        appendMessage('bot', 'Error connecting to Retell AI.');
+
+        scrollToBottom();
       }
 
-      scrollToBottom();
-    }
+      function appendMessage(who, text) {
+        const msg = document.createElement('div');
+        msg.className = `message ${who}`;
+        msg.textContent = text;
+        messagesEl.appendChild(msg);
+      }
 
-    function appendMessage(who, text) {
-      const msg = document.createElement('div');
-      msg.className = `message ${who}`;
-      msg.textContent = text;
-      messagesEl.appendChild(msg);
-    }
-
-    function scrollToBottom() {
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-    }
+      function scrollToBottom() {
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+    });
   </script>
 </body>
 </html>
