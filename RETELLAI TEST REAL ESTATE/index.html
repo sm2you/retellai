@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Retell AI Chat Widget</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    #chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100%;
+      max-width: 400px;
+      border: 1px solid #ccc;
+    }
+    #messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      background: #f9f9f9;
+    }
+    .message {
+      margin: 8px 0;
+      padding: 8px 12px;
+      border-radius: 12px;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+    .message.user {
+      align-self: flex-end;
+      background: #0078d4;
+      color: #fff;
+    }
+    .message.bot {
+      align-self: flex-start;
+      background: #e1e1e1;
+      color: #000;
+    }
+    #input-area {
+      display: flex;
+      border-top: 1px solid #ccc;
+    }
+    #input-area input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+    }
+    #input-area button {
+      background: #0078d4;
+      color: #fff;
+      border: none;
+      padding: 0 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+    <div id="messages"></div>
+    <div id="input-area">
+      <input id="user-input" type="text" placeholder="Type your message…" />
+      <button id="send-btn">Send</button>
+    </div>
+  </div>
+
+  <script>
+    // Replace with your Retell API key and chat ID
+    const RETELL_API_URL = 'https://api.retellai.com/create-chat-completion';
+    const RETELL_API_KEY = 'key_ea414098af763eef1f5aca26fe28';
+    const CHAT_ID         = 'agent_2b2e80fcac6c0179e9706d7048';
+
+    const messagesEl = document.getElementById('messages');
+    const inputEl    = document.getElementById('user-input');
+    const sendBtn    = document.getElementById('send-btn');
+
+    sendBtn.addEventListener('click', onSend);
+    inputEl.addEventListener('keyup', e => {
+      if (e.key === 'Enter') onSend();
+    });
+
+    async function onSend() {
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      appendMessage('user', text);
+      inputEl.value = '';
+      scrollToBottom();
+
+      try {
+        const res = await fetch(https://api.retellai.com/create-chat-completion, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + key_ea414098af763eef1f5aca26fe28
+          },
+          body: JSON.stringify({
+            chat_id: agent_2b2e80fcac6c0179e9706d7048,
+            content: text
+          })
+        });
+
+        const data = await res.json();
+        const messages = data.messages || [];
+        if (messages.length) {
+          // display each reply from agent
+          messages.forEach(msg => appendMessage('bot', msg.content));
+        } else {
+          appendMessage('bot', 'No response from agent.');
+        }
+      } catch (err) {
+        appendMessage('bot', 'Error connecting to Retell AI.');
+      }
+
+      scrollToBottom();
+    }
+
+    function appendMessage(who, text) {
+      const msg = document.createElement('div');
+      msg.className = `message ${who}`;
+      msg.textContent = text;
+      messagesEl.appendChild(msg);
+    }
+
+    function scrollToBottom() {
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+  </script>
+</body>
+</html>
